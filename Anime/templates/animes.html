@@ -1,0 +1,24 @@
+{%  extends 'base.html' %}
+ {% block title %} Home page {%  endblock %}
+
+{% block content %}
+<br>
+<h3>ანიმეს დამატება</h3>
+    <form method="post" style="width:50%; margin-left: 10px">
+      <div class="form-group">
+
+        <input type="text" name="title" class="form-control" placeholder="Anime Title"><br>
+        <input type="text" name="info" class="form-control" placeholder="Info"><br>
+        <input type="text" name="rating" class="form-control"  placeholder="Rating"><br>
+      </div>
+        {% with r_messages = get_flashed_messages() %}
+            {% for rmsg in r_messages %}
+            <p>{{rmsg}}</p>
+            {% endfor %}
+        {% endwith %}
+    <button type="submit" class="btn btn-primary">Add Anime</button>
+    </form>
+    <link href="static/img_style.css" rel="stylesheet">
+    <img src="static/img/big3.jpg" alt="big3" class="center">
+
+{% endblock %}

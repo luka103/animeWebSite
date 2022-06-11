@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if 'username' in session %}
+        <h2>Hello {{ session['username'] }} </h2>
+    {% elif 'mail' in session %}
+        <h2>Hello {{ session['mail'] }} </h2>
+    {% endif %}
+    <link href="static/img_style.css" rel="stylesheet">
+    <img src="static/img/goku1.png" alt="goku1" class="center">
+
+<a href="{{url_for('home')}}"> მთავარი გვერდი </a>
+{% endblock %}
+
+

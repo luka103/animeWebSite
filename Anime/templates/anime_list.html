@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Anime List
+{% endblock %}
+
+{% block content %}
+    <h8>Current Anime List</h8>
+
+    {% for each in content %}
+        <p>{{ each }}</p>
+    {% endfor %}
+
+{% endblock %}
+
+
