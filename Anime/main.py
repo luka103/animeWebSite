@@ -9,6 +9,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.register_blueprint(admin_page, url_prefix='/admin')
 db = SQLAlchemy(app)
 
+def isfloat(num):
+    try:
+        float(num)
+        return True
+    except ValueError:
+        return False
 
 class Anime(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -96,13 +102,13 @@ def anime():
         r = request.form['rating']
         if t == '' or i == '' or r == '':
             flash('შეიტანეთ ყველა ველი')
-        elif not r.isdecimal():
-            flash('შეიტანეთ რიცხვის რეიტინგის ველში')
+        elif not isfloat(r):
+            flash('შეიტანეთ რიცხვი რეიტინგის ველში')
         else:
             b1 = Anime(title=t, info=i, rating=float(r))
             db.session.add(b1)
             db.session.commit()
-            return 'მონაცემები დამატებულია'
+            flash('მონაცემები დამატებულია')
 
     return render_template('animes.html')
 
