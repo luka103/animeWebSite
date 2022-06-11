@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, render_template, request, session, flash
+from flask import Flask, redirect, url_for, render_template, request, session, flash, abort
 from flask_sqlalchemy import SQLAlchemy
 from admin import admin_page
 
@@ -9,12 +9,14 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.register_blueprint(admin_page, url_prefix='/admin')
 db = SQLAlchemy(app)
 
+
 def isfloat(num):
     try:
         float(num)
         return True
     except ValueError:
         return False
+
 
 class Anime(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -82,8 +84,11 @@ def register():
 
 @app.route('/user')
 def user():
-    subjects = ['Python', 'Calculus', 'DB']
-    return render_template('user.html', subjects=subjects)
+    if 'username' in session or 'mail' in session:
+        return render_template('user.html')
+    else:
+        error_type = 'Session key not found !'
+        return render_template('error_page.html', error_type=error_type)
 
 
 @app.route('/logout')
@@ -96,21 +101,24 @@ def logout():
 
 @app.route('/anime', methods=['GET', 'POST'])
 def anime():
-    if request.method == 'POST':
-        t = request.form['title']
-        i = request.form['info']
-        r = request.form['rating']
-        if t == '' or i == '' or r == '':
-            flash('შეიტანეთ ყველა ველი')
-        elif not isfloat(r):
-            flash('შეიტანეთ რიცხვი რეიტინგის ველში')
-        else:
-            b1 = Anime(title=t, info=i, rating=float(r))
-            db.session.add(b1)
-            db.session.commit()
-            flash('მონაცემები დამატებულია')
+    if 'mail' in session or 'username' in session:
+        if request.method == 'POST':
+            t = request.form['title']
+            i = request.form['info']
+            r = request.form['rating']
+            if t == '' or i == '' or r == '':
+                flash('შეიტანეთ ყველა ველი')
+            elif not isfloat(r):
+                flash('შეიტანეთ რიცხვი რეიტინგის ველში')
+            else:
+                b1 = Anime(title=t, info=i, rating=float(r))
+                db.session.add(b1)
+                db.session.commit()
+                flash('მონაცემები დამატებულია')
 
-    return render_template('animes.html')
+        return render_template('animes.html')
+    else:
+        abort(404)
 
 
 @app.route('/list', methods=['GET', 'POST'])
@@ -118,6 +126,10 @@ def anime_list():
     content = Anime.query.all()
     return render_template('anime_list.html', content=content)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    error_type = e
+    return render_template('error_page.html', error_type=e)
 
 if __name__ == "__main__":
     app.run(debug=True)
